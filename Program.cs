@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace BlackjackTutorial
 {
@@ -46,6 +47,7 @@ namespace BlackjackTutorial
     public class Deck
     {
         private List<Card> cards;
+        private Random random = new Random();
 
         public Deck()
         {
@@ -64,6 +66,31 @@ namespace BlackjackTutorial
             }
         }
 
+        public void Shuffle()
+        {
+            int i = cards.Count;
+            while (i > 1)
+            {
+                i--;
+                int y = random.Next(i + 1);
+                Card value = cards[y];
+                cards[y] = cards[i];
+                cards[i] = value;
+            }
+        }
+
+        public void DrawCard()
+        {
+            Card CurrentCard;
+
+            CurrentCard = cards[0];
+
+            Console.WriteLine("You have drawn a card:");
+            Console.WriteLine($"{CurrentCard.Rank} of {CurrentCard.Suit} (Value: {CurrentCard.Value})");
+
+            cards.RemoveAt(0);
+        }
+
         public List<Card> GetCards()
         {
             return cards;
@@ -76,7 +103,27 @@ namespace BlackjackTutorial
         {
             Console.WriteLine("Here is the deck:");
             Deck deck = new Deck();
-            deck.GetCards();
+
+            var cards = deck.GetCards();
+            deck.Shuffle();
+
+            foreach (var card in cards)
+            {
+                Console.WriteLine($"{card.Rank} of {card.Suit} (Value: {card.Value})");
+            }
+
+            while (true)
+            {
+                string input = Console.ReadLine();
+
+                if (input == "hit")
+                {
+                    deck.DrawCard();
+                } else if (input == "stand") {
+                    break;
+                }
+            }
+
         }
     }
 }
