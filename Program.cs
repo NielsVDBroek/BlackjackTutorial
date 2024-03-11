@@ -114,7 +114,7 @@ namespace BlackjackTutorial
 
             while (true)
             {
-                string input = Console.ReadLine();
+                string input = Console.ReadLine().ToLower();
 
                 if (input == "hit")
                 {
