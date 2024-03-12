@@ -37,7 +37,7 @@ namespace BlackjackTutorial
         public static readonly Rank Queen = new Rank("Queen", 10);
         public static readonly Rank King = new Rank("King", 10);
 
-        public static IEnumerable<Rank> AllRanks => new[] { Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King };
+        public static IEnumerable<Rank> Ranks => new[] { Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King };
     }
 
     public class Card
@@ -69,7 +69,7 @@ namespace BlackjackTutorial
         {
             foreach (Suit suit in Enum.GetValues(typeof(Suit)))
             {
-                foreach (Rank rank in Rank.AllRanks)
+                foreach (Rank rank in Rank.Ranks)
                 {
                     cards.Add(new Card(suit, rank));
                 }
@@ -94,7 +94,7 @@ namespace BlackjackTutorial
             Card CurrentCard = cards[0];
 
             Console.WriteLine("You have drawn a card:");
-            Console.WriteLine($"{CurrentCard.Rank.Name} of {CurrentCard.Suit} (Value: {CurrentCard.Value})");
+            Console.WriteLine($"{CurrentCard.Rank.Name} of {CurrentCard.Suit} (Value: {CurrentCard.Rank.Value})");
 
             cards.RemoveAt(0);
         }
@@ -111,9 +111,9 @@ namespace BlackjackTutorial
         {
             Console.WriteLine("Here is the deck:");
             Deck deck = new Deck();
+            deck.Shuffle();
 
             var cards = deck.GetCards();
-            deck.Shuffle();
 
             foreach (var card in cards)
             {
