@@ -130,7 +130,8 @@ namespace BlackjackTutorial
                 if (input == "hit")
                 {
                     deck.DrawCard();
-                } else if (input == "stand") {
+                } else if (input == "stand")
+                {
                     Console.WriteLine("Player stands");
                 } else if(input == "break")
                 {
