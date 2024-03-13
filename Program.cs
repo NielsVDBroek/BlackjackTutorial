@@ -89,7 +89,7 @@ namespace BlackjackTutorial
             }
         }
 
-        public void DrawCard()
+        public Card DrawCard()
         {
             Card CurrentCard = cards[0];
 
@@ -97,11 +97,29 @@ namespace BlackjackTutorial
             Console.WriteLine($"{CurrentCard.Rank.Name} of {CurrentCard.Suit} (Value: {CurrentCard.Rank.Value})");
 
             cards.RemoveAt(0);
+            return CurrentCard;
         }
 
         public List<Card> GetCards()
         {
             return cards;
+        }
+    }
+
+    public class Hand
+    {
+        public List<Card> HandCards;
+        public int Total { get; private set; }
+
+        public Hand()
+        {
+            HandCards = new List<Card>();
+        }
+
+        public void AddCard(Card NewCard)
+        {
+            Total = Total + NewCard.Value;
+            HandCards.Add(NewCard);
         }
     }
 
@@ -111,6 +129,7 @@ namespace BlackjackTutorial
         {
             Console.WriteLine("Here is the deck:");
             Deck deck = new Deck();
+            Hand hand = new Hand();
             deck.Shuffle();
 
             var cards = deck.GetCards();
@@ -123,13 +142,13 @@ namespace BlackjackTutorial
 
             Console.WriteLine("Start of game");
 
-            while (true)
+            while (hand.Total < 21)
             {
                 string input = Console.ReadLine().ToLower();
 
                 if (input == "hit")
                 {
-                    deck.DrawCard();
+                    hand.AddCard(deck.DrawCard());
                 } else if (input == "stand")
                 {
                     Console.WriteLine("Player stands");
@@ -137,8 +156,18 @@ namespace BlackjackTutorial
                 {
                     break;
                 }
+
+                Console.WriteLine("Your hand total is: " + hand.Total);
             }
 
+            if(hand.Total == 21)
+            {
+                Console.WriteLine("Blackjack");
+            }
+            else
+            {
+                Console.WriteLine("Busted");
+            }
         }
     }
 }
