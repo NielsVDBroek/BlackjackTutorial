@@ -1,172 +1,150 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Linq;
+using System.Text;
+using System.Numerics;
 
 namespace BlackjackTutorial
 {
-    public enum Suit
-    {
-        Hearts,
-        Diamonds,
-        Clubs,
-        Spades
-    }
-
-    public class Rank
-    {
-        public string Name { get; }
-        public int Value { get; }
-
-        public Rank(string name, int value)
-        {
-            Name = name;
-            Value = value;
-        }
-
-        public static readonly Rank Ace = new Rank("Ace", 1);
-        public static readonly Rank Two = new Rank("Two", 2);
-        public static readonly Rank Three = new Rank("Three", 3);
-        public static readonly Rank Four = new Rank("Four", 4);
-        public static readonly Rank Five = new Rank("Five", 5);
-        public static readonly Rank Six = new Rank("Six", 6);
-        public static readonly Rank Seven = new Rank("Seven", 7);
-        public static readonly Rank Eight = new Rank("Eight", 8);
-        public static readonly Rank Nine = new Rank("Nine", 9);
-        public static readonly Rank Ten = new Rank("Ten", 10);
-        public static readonly Rank Jack = new Rank("Jack", 10);
-        public static readonly Rank Queen = new Rank("Queen", 10);
-        public static readonly Rank King = new Rank("King", 10);
-
-        public static IEnumerable<Rank> Ranks => new[] { Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King };
-    }
-
-    public class Card
-    {
-        public Suit Suit { get; private set; }
-        public Rank Rank { get; private set; }
-
-        public Card(Suit suit, Rank rank)
-        {
-            Suit = suit;
-            Rank = rank;
-        }
-
-        public int Value => Rank.Value;
-    }
-
-    public class Deck
-    {
-        private List<Card> cards;
-        private Random random = new Random();
-
-        public Deck()
-        {
-            cards = new List<Card>();
-            CreateDeck();
-        }
-
-        private void CreateDeck()
-        {
-            foreach (Suit suit in Enum.GetValues(typeof(Suit)))
-            {
-                foreach (Rank rank in Rank.Ranks)
-                {
-                    cards.Add(new Card(suit, rank));
-                }
-            }
-        }
-
-        public void Shuffle()
-        {
-            int i = cards.Count;
-            while (i > 1)
-            {
-                i--;
-                int y = random.Next(i + 1);
-                Card value = cards[y];
-                cards[y] = cards[i];
-                cards[i] = value;
-            }
-        }
-
-        public Card DrawCard()
-        {
-            Card CurrentCard = cards[0];
-
-            Console.WriteLine("You have drawn a card:");
-            Console.WriteLine($"{CurrentCard.Rank.Name} of {CurrentCard.Suit} (Value: {CurrentCard.Rank.Value})");
-
-            cards.RemoveAt(0);
-            return CurrentCard;
-        }
-
-        public List<Card> GetCards()
-        {
-            return cards;
-        }
-    }
-
-    public class Hand
-    {
-        public List<Card> HandCards;
-        public int Total { get; private set; }
-
-        public Hand()
-        {
-            HandCards = new List<Card>();
-        }
-
-        public void AddCard(Card NewCard)
-        {
-            Total = Total + NewCard.Value;
-            HandCards.Add(NewCard);
-        }
-    }
-
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Here is the deck:");
             Deck deck = new Deck();
             Hand hand = new Hand();
             deck.Shuffle();
 
             var cards = deck.GetCards();
 
+            Console.WriteLine("Here is the deck:");
             foreach (var card in cards)
             {
-                Console.WriteLine($"{card.Rank.Name} of {card.Suit} (Value: {card.Value})");
+                Console.WriteLine($"{card.Name} of {card.Suit} (Value: {card.Value})");
 
             }
 
             Console.WriteLine("Start of game");
 
-            while (hand.Total < 21)
+            Boolean GameEnd = false;
+            while (!GameEnd)
             {
-                string input = Console.ReadLine().ToLower();
+                int TotalPlayers = 0;
+                int MaxPlayers = 4;
 
-                if (input == "hit")
+                List<Player> players;
+                players = new List<Player>();
+
+                do
                 {
-                    hand.AddCard(deck.DrawCard());
-                } else if (input == "stand")
+                    Console.WriteLine("How many players are playing? Minimum of 1, Maximum of 4 players:");
+                    string TotalPlayersInput = Console.ReadLine();
+
+                    try
+                    {
+                        TotalPlayers = Convert.ToInt32(TotalPlayersInput);
+
+                        if (TotalPlayers < 1 || TotalPlayers > MaxPlayers)
+                        {
+                            Console.WriteLine("Please enter a number between 1 and 4.");
+                        }
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("That is not a valid number.");
+                    }
+                    catch (OverflowException)
+                    {
+                        Console.WriteLine("Please enter a number between 1 and 4.");
+                    }
+                    
+                    Console.WriteLine();
+
+                } while (TotalPlayers < 1 || TotalPlayers > MaxPlayers);
+
+
+
+                Console.WriteLine($"Total players: {TotalPlayers}");
+                string input = "";
+                string NameInput = "";
+
+                for (int i = 0; i < TotalPlayers; i++)
                 {
-                    Console.WriteLine("Player stands");
-                } else if(input == "break")
-                {
-                    break;
+                    while (input != "yes" && input != "no")
+                    {
+                        Console.WriteLine("Does Player" + (i+1) + " want to enter a name?");
+                        Console.WriteLine("Yes or No");
+                        input = Console.ReadLine().ToLower();
+                        if (input == "yes")
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("Enter name:");
+                            NameInput = Console.ReadLine();
+                        }
+                        else if (input == "no")
+                        {
+                            NameInput = ("Player" + (i+1));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input");
+                        }
+                        Thread.Sleep(500);
+                        Console.WriteLine();
+                    }
+
+                    players.Add(new Player(NameInput, 100));
+                    Console.WriteLine(NameInput + " " + "added");
+
+                    Console.WriteLine();
+                    input = "";
+                    NameInput = "";
                 }
 
-                Console.WriteLine("Your hand total is: " + hand.Total);
-            }
+                Console.WriteLine("Here are all the players");
+                foreach (Player player in players) {
+                    Console.WriteLine(player.PlayerName);
+                }
 
-            if(hand.Total == 21)
-            {
-                Console.WriteLine("Blackjack");
-            }
-            else
-            {
-                Console.WriteLine("Busted");
+                for (int i = 0; i < 2; i++)
+                {
+                    foreach (Player player in players)
+                    {
+                        Player currentPlayer = players.FirstOrDefault(player => player.PlayerName == player.PlayerName);
+                        if (currentPlayer != null)
+                        {
+                            currentPlayer.drawCard(deck);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Player1 not found.");
+                        }
+                        Thread.Sleep(500);
+                        Console.WriteLine();
+                    }
+                }
+
+                string rematchInput = "";
+                Console.WriteLine("Rematch?");
+                while (rematchInput != "yes" && rematchInput != "no")
+                {
+                    Console.WriteLine("Yes or No");
+                    rematchInput = Console.ReadLine().ToLower();
+                    if (rematchInput == "no")
+                    {
+                        Console.WriteLine("Game Ended");
+                        GameEnd = true;
+                    }
+                    else if (rematchInput == "yes")
+                    {
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid input");
+                    }
+                }
+
             }
         }
     }
