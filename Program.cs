@@ -110,14 +110,7 @@ namespace BlackjackTutorial
                 {
                     foreach (Player player in players)
                     {
-                        if (player != null)
-                        {
-                            player.drawCard(deck);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Player1 not found.");
-                        }
+                        player.drawCard(deck);
                         Thread.Sleep(500);
                         Console.WriteLine();
                     }
