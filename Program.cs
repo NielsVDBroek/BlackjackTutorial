@@ -110,10 +110,9 @@ namespace BlackjackTutorial
                 {
                     foreach (Player player in players)
                     {
-                        Player currentPlayer = players.FirstOrDefault(player => player.PlayerName == player.PlayerName);
-                        if (currentPlayer != null)
+                        if (player != null)
                         {
-                            currentPlayer.drawCard(deck);
+                            player.drawCard(deck);
                         }
                         else
                         {
@@ -144,7 +143,6 @@ namespace BlackjackTutorial
                         Console.WriteLine("Invalid input");
                     }
                 }
-
             }
         }
     }
