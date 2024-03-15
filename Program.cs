@@ -116,30 +116,80 @@ namespace BlackjackTutorial
 
                     while (playerPlaying)
                     {
-                        Console.WriteLine($"{player.PlayerName} Hit or stand?");
-                        if (player.playerHitOrNot(player.PlayerHand.Total))
-                        {
-                            Console.WriteLine($"{player.PlayerName}: Hit");
-                            player.drawCard(deck);
+                        Boolean DealerContinue = false;
+                        string DealerInputHandlePlayer = "";
 
-                            if(player.PlayerHand.Total == 21)
+                        player.showHand();
+                        Console.WriteLine();
+
+                        while (!DealerContinue)
+                        {
+                            if (player.PlayerHand.Total == 21)
                             {
-                                Console.WriteLine("Blackjack!");
-                                playerPlaying = false;
-                            } else if(player.PlayerHand.Total > 21)
+                                while (DealerInputHandlePlayer != "blackjack")
+                                {
+                                    Console.WriteLine("Dealer please enter action:");
+                                    DealerInputHandlePlayer = Console.ReadLine().ToLower();
+
+                                    if (DealerInputHandlePlayer != "Blackjack")
+                                    {
+                                        Console.WriteLine("Incorrect action!");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Correct action");
+                                        Console.WriteLine($"{player.PlayerName} has Blackjack!");
+                                        playerPlaying = false;
+                                    }
+                                }
+                            }
+                            else if (player.PlayerHand.Total > 21)
                             {
-                                Console.WriteLine("Busted!");
-                                playerPlaying = false;
-                                playerBusted = true;
+                                while (DealerInputHandlePlayer != "busted")
+                                {
+                                    Console.WriteLine("Dealer please enter action:");
+                                    DealerInputHandlePlayer = Console.ReadLine().ToLower();
+
+                                    if (DealerInputHandlePlayer != "busted")
+                                    {
+                                        Console.WriteLine("Incorrect action!");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"{player.PlayerName} is Busted!");
+                                        playerPlaying = false;
+                                        playerBusted = true;
+                                    }
+                                }
+                            }
+                            DealerContinue = true;
+                        }
+                        DealerInputHandlePlayer = "";
+                        while (DealerInputHandlePlayer != "ask player")
+                        {
+                            Console.WriteLine("Dealer please enter action:");
+                            DealerInputHandlePlayer = Console.ReadLine().ToLower();
+
+                            if (DealerInputHandlePlayer != "ask player")
+                            {
+                                Console.WriteLine("Incorrect action!");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"{player.PlayerName} Hit or stand?");
+                                if (player.playerHitOrNot(player.PlayerHand.Total))
+                                {
+                                    Console.WriteLine($"{player.PlayerName}: Hit");
+                                    player.drawCard(deck);
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"{player.PlayerName}: Stand");
+                                    playerPlaying = false;
+                                }
                             }
                         }
-                        else
-                        {
-                            Console.WriteLine($"{player.PlayerName}: Stand");
-                            playerPlaying = false;
-                        }
                     }
-
                 }
 
                 PlayGame = Dealer.askForAnotherGame();

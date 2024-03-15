@@ -50,6 +50,11 @@ namespace BlackjackTutorial
             Card drawnCard = deck.DrawCard();
             PlayerHand.AddCard(drawnCard);
             Console.WriteLine();
+            showHand();
+        }
+
+        public void showHand()
+        {
             Console.WriteLine($"{PlayerName} hand: ");
             foreach (Card card in PlayerHand.HandCards)
             {
@@ -63,6 +68,9 @@ namespace BlackjackTutorial
             Random random = new Random();
             int RandomPercentage = random.Next(0, 100);
             int percentage = ((playerTotal - 11) * 10);
+            if (percentage < 0 ) {
+                percentage = 0;
+            }
 
             if (RandomPercentage > percentage)
             {
