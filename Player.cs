@@ -10,7 +10,7 @@ namespace BlackjackTutorial
     public class Hand
     {
         public List<Card> HandCards;
-        public int Total { get; private set; }
+        public int Total { get; set; }
 
         public Hand()
         {
@@ -37,13 +37,41 @@ namespace BlackjackTutorial
             PlayerBalance = StartBalance;
         }
 
+        public void resetPlayer()
+        {
+            PlayerHand.Total = 0;
+            PlayerHand.HandCards = new List<Card>();
+        }
+
 
         public void drawCard(Deck deck)
         {
             Console.WriteLine($"{PlayerName} drew a card.");
             Card drawnCard = deck.DrawCard();
             PlayerHand.AddCard(drawnCard);
-            Console.WriteLine($"{PlayerName} hand: {PlayerHand.Total}");
+            Console.WriteLine();
+            Console.WriteLine($"{PlayerName} hand: ");
+            foreach (Card card in PlayerHand.HandCards)
+            {
+                Console.WriteLine($"{card.Name} of {card.Suit} (Value: {card.Value})");
+            }
+            Console.WriteLine($"Hand total: {PlayerHand.Total}");
+        }
+
+        public Boolean playerHitOrNot(int playerTotal)
+        {
+            Random random = new Random();
+            int RandomPercentage = random.Next(0, 100);
+            int percentage = ((playerTotal - 11) * 10);
+
+            if (RandomPercentage > percentage)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

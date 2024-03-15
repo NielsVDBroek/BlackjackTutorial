@@ -47,6 +47,9 @@ namespace BlackjackTutorial
         public Suit Suit { get; private set; }
         public Rank Rank { get; private set; }
 
+        public Boolean isShown { get; set; } = true;
+
+
         public Card(Suit suit, Rank rank)
         {
             Suit = suit;
