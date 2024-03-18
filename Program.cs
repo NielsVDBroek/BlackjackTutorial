@@ -90,23 +90,40 @@ namespace BlackjackTutorial
                         Console.WriteLine("Correct action!");
                         deck = new Deck();
                         deck.Shuffle();
+                        Console.WriteLine("Cards have been shuffled!");
                     }
                 }
 
-                var cards = deck.GetCards();
+                DealerInput = "";
 
-                for (int i = 0; i < 2; i++)
+                while (DealerInput != "deal cards")
                 {
-                    foreach (Player player in players)
-                    {
-                        player.drawCard(deck);
-                        Thread.Sleep(500);
-                        Console.WriteLine();
-                    }
+                    Console.WriteLine("Dealer please enter action:");
+                    DealerInput = Console.ReadLine().ToLower();
 
-                    dealer.drawCard(deck);
-                    Console.WriteLine();
-                    Console.WriteLine();
+                    if (DealerInput != "deal cards")
+                    {
+                        Console.WriteLine("Incorrect action!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Correct action!");
+                        var cards = deck.GetCards();
+
+                        for (int i = 0; i < 2; i++)
+                        {
+                            foreach (Player player in players)
+                            {
+                                player.drawCard(deck);
+                                Thread.Sleep(500);
+                                Console.WriteLine();
+                            }
+
+                            dealer.drawCard(deck);
+                            Console.WriteLine();
+                            Console.WriteLine();
+                        }
+                    }
                 }
 
                 foreach (Player player in players)
@@ -131,7 +148,7 @@ namespace BlackjackTutorial
                                     Console.WriteLine("Dealer please enter action:");
                                     DealerInputHandlePlayer = Console.ReadLine().ToLower();
 
-                                    if (DealerInputHandlePlayer != "Blackjack")
+                                    if (DealerInputHandlePlayer != "blackjack")
                                     {
                                         Console.WriteLine("Incorrect action!");
                                     }
@@ -140,6 +157,7 @@ namespace BlackjackTutorial
                                         Console.WriteLine("Correct action");
                                         Console.WriteLine($"{player.PlayerName} has Blackjack!");
                                         playerPlaying = false;
+                                        DealerContinue = true;
                                     }
                                 }
                             }
@@ -159,50 +177,72 @@ namespace BlackjackTutorial
                                         Console.WriteLine($"{player.PlayerName} is Busted!");
                                         playerPlaying = false;
                                         playerBusted = true;
+                                        DealerContinue = true;
                                     }
                                 }
                             }
-                            DealerContinue = true;
-                        }
-                        DealerInputHandlePlayer = "";
-                        while (DealerInputHandlePlayer != "ask player")
-                        {
-                            Console.WriteLine("Dealer please enter action:");
-                            DealerInputHandlePlayer = Console.ReadLine().ToLower();
-
-                            if (DealerInputHandlePlayer != "ask player")
-                            {
-                                Console.WriteLine("Incorrect action!");
-                            }
                             else
                             {
-                                Console.WriteLine($"{player.PlayerName} Hit or stand?");
-                                if (player.playerHitOrNot(player.PlayerHand.Total))
+                                DealerInputHandlePlayer = "";
+                                while (DealerInputHandlePlayer != "ask player")
                                 {
-                                    Console.WriteLine($"{player.PlayerName}: Hit");
-                                    player.drawCard(deck);
-                                }
-                                else
-                                {
-                                    Console.WriteLine($"{player.PlayerName}: Stand");
-                                    playerPlaying = false;
+                                    Console.WriteLine("Dealer please enter action:");
+                                    DealerInputHandlePlayer = Console.ReadLine().ToLower();
+
+                                    if (DealerInputHandlePlayer != "ask player")
+                                    {
+                                        Console.WriteLine("Incorrect action!");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"{player.PlayerName} Hit or stand?");
+                                        if (player.playerHitOrNot(player.PlayerHand.Total))
+                                        {
+                                            Console.WriteLine($"{player.PlayerName}: Hit");
+                                            player.drawCard(deck);
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{player.PlayerName}: Stand");
+
+                                            DealerInput = "";
+
+                                            while (DealerInput != "next player")
+                                            {
+                                                Console.WriteLine("Dealer please enter action:");
+                                                DealerInput = Console.ReadLine().ToLower();
+
+                                                if (DealerInput != "next player")
+                                                {
+                                                    Console.WriteLine("Incorrect action!");
+                                                }
+                                                else
+                                                {
+                                                    Console.WriteLine("Next player.");
+                                                    Console.WriteLine();
+                                                    playerPlaying = false;
+                                                    DealerContinue = true;
+                                                }
+
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
 
-                PlayGame = Dealer.askForAnotherGame();
-
-                if (PlayGame)
+            PlayGame = Dealer.askForAnotherGame();
+            if (PlayGame)
+            {
+                foreach (Player player in players)
                 {
-                    foreach (Player player in players)
-                    {
-                        player.resetPlayer();
-                    }
-
-                    dealer.resetPlayer();
+                    player.resetPlayer();
                 }
+                
+                dealer.resetPlayer();
             }
         }
     }
