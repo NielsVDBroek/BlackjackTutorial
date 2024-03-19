@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -28,19 +29,47 @@ namespace BlackjackTutorial
     {
         public string PlayerName { get; private set; }
         public Hand PlayerHand { get; private set; }
-        public int PlayerBalance { get; private set; }
+        public double PlayerBalance { get; private set; }
+
+        public double PlayerBet {  get; set; }
+        public Boolean HasBlackjack { get; set; }
+        public Boolean IsBusted { get; set; }
+
 
         public Player(string name, int StartBalance)
         {
             PlayerName = name;
             PlayerHand = new Hand();
             PlayerBalance = StartBalance;
+            HasBlackjack = false;
+            IsBusted = false;
+        }
+
+        public void SetBet()
+        {
+            if (PlayerBalance <= 10)
+            {
+                PlayerBet = PlayerBalance;
+            }
+            else
+            {
+                PlayerBet = (PlayerBalance * 0.2);
+            }
+            PlayerBalance = PlayerBalance - PlayerBet;
+        }
+
+        public void AdjustPlayerBalance(double CurrentPlayerBet)
+        {
+            PlayerBalance = PlayerBalance + CurrentPlayerBet;
         }
 
         public void resetPlayer()
         {
             PlayerHand.Total = 0;
             PlayerHand.HandCards = new List<Card>();
+            PlayerBet = 0;
+            HasBlackjack = false;
+            IsBusted = false;
         }
 
 
