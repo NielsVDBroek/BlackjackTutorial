@@ -387,7 +387,6 @@ namespace BlackjackTutorial
                     }                    
                 }
 
-                //remove player from players if balance is 0
                 foreach (Player player in players)
                 {
                     if(player.PlayerBalance == 0)
