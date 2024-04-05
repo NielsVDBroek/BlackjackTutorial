@@ -47,9 +47,6 @@ namespace BlackjackTutorial
         public Suit Suit { get; private set; }
         public Rank Rank { get; private set; }
 
-        public Boolean isShown { get; set; } = true;
-
-
         public Card(Suit suit, Rank rank)
         {
             Suit = suit;
@@ -100,6 +97,14 @@ namespace BlackjackTutorial
             Card CurrentCard = cards[0];
 
             Console.WriteLine($"{CurrentCard.Name} of {CurrentCard.Suit} (Value: {CurrentCard.Value})");
+
+            cards.RemoveAt(0);
+            return CurrentCard;
+        }
+
+        public Card DrawCardHidden()
+        {
+            Card CurrentCard = cards[0];
 
             cards.RemoveAt(0);
             return CurrentCard;

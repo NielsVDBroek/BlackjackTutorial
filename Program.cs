@@ -145,7 +145,7 @@ namespace BlackjackTutorial
                         Thread.Sleep(500);
                         var cards = deck.GetCards();
 
-                        for (int i = 0; i < 2; i++)
+                        for (int cardsDealt = 0; cardsDealt < 2; cardsDealt++)
                         {
                             foreach (Player player in players)
                             {
@@ -153,10 +153,18 @@ namespace BlackjackTutorial
                                 Thread.Sleep(500);
                                 Console.WriteLine();
                             }
-
-                            dealer.drawCard(deck);
-                            Console.WriteLine();
-                            Console.WriteLine();
+                            if (cardsDealt == 0)
+                            {
+                                dealer.drawCard(deck);
+                                Console.WriteLine();
+                                Console.WriteLine();
+                            }
+                            else
+                            {
+                                dealer.drawCardHidden(deck);
+                                Console.WriteLine();
+                                Console.WriteLine();
+                            }
                         }
                     }
                 }
@@ -297,6 +305,7 @@ namespace BlackjackTutorial
                     }
                 }
                 dealer.showHand();
+                dealer.revealHiddenCard();
                 while (dealer.PlayerHand.Total < 17)
                 {
                     DealerInput = "";

@@ -14,12 +14,21 @@ namespace BlackjackTutorial
             int dealerBalance = startBalance;
         }
 
+        Card hiddenCard;
+
         public void drawCardHidden(Deck deck)
         {
-            Console.WriteLine($"{PlayerName} drew a card.");
-            Card drawnCard = deck.DrawCard();
-            drawnCard.isShown = false;
-            Console.WriteLine($"{PlayerName} card is hidden. Hand total: {PlayerHand.Total}");
+            Console.WriteLine("Dealer drew a card.");
+            hiddenCard = deck.DrawCardHidden();
+            Console.WriteLine($"Dealers card is hidden. Hand total: {PlayerHand.Total}");
+        }
+
+        public void revealHiddenCard()
+        {
+            Console.WriteLine($"Dealer reveals hidden card: {hiddenCard.Name} of {hiddenCard.Suit} (Value: {hiddenCard.Value}");
+            PlayerHand.AddCard(hiddenCard);
+            Console.WriteLine();
+            showHand();
         }
 
         public void dealCards(Player player)

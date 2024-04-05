@@ -34,6 +34,7 @@ namespace BlackjackTutorial
         public double PlayerBet {  get; set; }
         public Boolean HasBlackjack { get; set; }
         public Boolean IsBusted { get; set; }
+        public Boolean hasAce { get; set; }
 
 
         public Player(string name, int StartBalance)
@@ -43,6 +44,7 @@ namespace BlackjackTutorial
             PlayerBalance = StartBalance;
             HasBlackjack = false;
             IsBusted = false;
+            hasAce = false;
         }
 
         public void SetBet()
@@ -70,6 +72,7 @@ namespace BlackjackTutorial
             PlayerBet = 0;
             HasBlackjack = false;
             IsBusted = false;
+            hasAce = false;
         }
 
 
@@ -77,6 +80,10 @@ namespace BlackjackTutorial
         {
             Console.WriteLine($"{PlayerName} drew a card.");
             Card drawnCard = deck.DrawCard();
+            if (drawnCard.Rank.Name == "Ace")
+            {
+                hasAce = true;
+            }
             PlayerHand.AddCard(drawnCard);
             Console.WriteLine();
             showHand();
