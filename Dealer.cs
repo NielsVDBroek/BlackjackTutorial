@@ -16,28 +16,28 @@ namespace BlackjackTutorial
 
         Card hiddenCard;
 
-        public void drawCardHidden(Deck deck)
+        public void DrawCardHidden(Deck deck)
         {
             Console.WriteLine("Dealer drew a card.");
             hiddenCard = deck.DrawCardHidden();
             Console.WriteLine($"Dealers card is hidden. Hand total: {PlayerHand.Total}");
         }
 
-        public void revealHiddenCard()
+        public void RevealHiddenCard()
         {
             Console.WriteLine($"Dealer reveals hidden card: {hiddenCard.Name} of {hiddenCard.Suit} (Value: {hiddenCard.Value}");
             PlayerHand.AddCard(hiddenCard);
             Console.WriteLine();
-            showHand();
+            ShowHand();
         }
 
-        public void dealCards(Player player)
+        public void DealCards(Player player)
         {
             //Code voor dealen hier.
             
         }
 
-        public static Boolean askForAnotherGame()
+        public static Boolean AskForAnotherGame()
         {
             string rematchInput = "";
             bool anotherMatch = false;
@@ -64,7 +64,7 @@ namespace BlackjackTutorial
 
         }
 
-        public static int askForTotalPlayers(int MaxPlayersInput)
+        public static int AskForTotalPlayers(int MaxPlayersInput)
         {
             string TotalPlayersInputString = "";
             int TotalPlayersInput = 0;

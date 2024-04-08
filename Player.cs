@@ -20,7 +20,7 @@ namespace BlackjackTutorial
 
         public void AddCard(Card NewCard)
         {
-            Total = Total + NewCard.Value;
+            Total += NewCard.Value;
             HandCards.Add(NewCard);
         }
     }
@@ -34,7 +34,8 @@ namespace BlackjackTutorial
         public double PlayerBet {  get; set; }
         public Boolean HasBlackjack { get; set; }
         public Boolean IsBusted { get; set; }
-        public Boolean HasAce { get; set; }
+        public Boolean HasAceToBeDecided { get; set; }
+        public Card PlayerAce { get; set; }
 
 
         public Player(string name, int StartBalance)
@@ -44,7 +45,8 @@ namespace BlackjackTutorial
             PlayerBalance = StartBalance;
             HasBlackjack = false;
             IsBusted = false;
-            HasAce = false;
+            HasAceToBeDecided = false;
+            PlayerAce = null;
         }
 
         public void SetBet()
@@ -57,53 +59,81 @@ namespace BlackjackTutorial
             {
                 PlayerBet = (PlayerBalance * 0.2);
             }
-            PlayerBalance = PlayerBalance - PlayerBet;
+            PlayerBalance -= PlayerBet;
         }
 
         public void AdjustPlayerBalance(double CurrentPlayerBet)
         {
-            PlayerBalance = PlayerBalance + CurrentPlayerBet;
+            PlayerBalance += CurrentPlayerBet;
         }
 
-        public void resetPlayer()
+        public void ResetPlayer()
         {
             PlayerHand.Total = 0;
             PlayerHand.HandCards = new List<Card>();
             PlayerBet = 0;
             HasBlackjack = false;
             IsBusted = false;
-            HasAce = false;
+            HasAceToBeDecided = false;
+            PlayerAce = null;
         }
 
 
-        public void drawCard(Deck deck)
+        public void DrawCard(Deck deck)
         {
             Console.WriteLine($"{PlayerName} drew a card.");
             Card drawnCard = deck.DrawCard();
-            if (drawnCard.Rank.Name == "Ace")
+            if (drawnCard.Rank.Name == "Ace" && PlayerHand.Total <= 10 && HasAceToBeDecided == false)
             {
-                HasAce = true;
+                HasAceToBeDecided = true;
+                Console.WriteLine("player has ace");
+                PlayerAce = drawnCard;
+
+            } else
+            {
+                PlayerHand.AddCard(drawnCard);
+                if (HasAceToBeDecided && PlayerHand.Total > 10)
+                {
+                    PlayerHand.AddCard(PlayerAce);
+                    HasAceToBeDecided = false;
+                    PlayerAce = null;
+                }
             }
-            PlayerHand.AddCard(drawnCard);
             Console.WriteLine();
-            showHand();
+            ShowHand();
         }
 
-        public void showHand()
+        public void ShowHand()
         {
             Console.WriteLine($"{PlayerName} hand: ");
             foreach (Card card in PlayerHand.HandCards)
             {
                 Console.WriteLine($"{card.Name} of {card.Suit} (Value: {card.Value})");
             }
-            Console.WriteLine($"Hand total: {PlayerHand.Total}");
+            if (HasAceToBeDecided == true)
+            {
+                Console.WriteLine($"{PlayerAce.Name} of {PlayerAce.Suit} (Value: {PlayerAce.Value})");
+                Console.WriteLine($"Hand total: {PlayerHand.Total + 1} | {PlayerHand.Total + 11}");
+            }
+            else
+            {
+                Console.WriteLine($"Hand total: {PlayerHand.Total}");
+            }
         }
 
-        public Boolean playerHitOrNot(int playerTotal)
+        public Boolean PlayerHitOrNot(int playerTotal)
         {
             Random random = new Random();
             int RandomPercentage = random.Next(0, 100);
-            int percentage = ((playerTotal - 11) * 10);
+            int percentage;
+            if (HasAceToBeDecided)
+            {
+                percentage = (((playerTotal + 11) - 11) * 11);
+            }
+            else
+            {
+                percentage = ((playerTotal - 11) * 11);
+            }
             if (percentage < 0 ) {
                 percentage = 0;
             }
@@ -115,6 +145,22 @@ namespace BlackjackTutorial
             else
             {
                 return false;
+            }
+        }
+
+        public void PlayerStandsWithAce()
+        {
+            if (HasAceToBeDecided)
+            {
+                if (PlayerHand.Total <= 10)
+                {
+                    PlayerHand.AddCard(PlayerAce);
+                    PlayerHand.Total += 10;
+                }
+                else
+                {
+                    PlayerHand.AddCard(PlayerAce);
+                }
             }
         }
     }
