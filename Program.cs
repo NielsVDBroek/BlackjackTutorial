@@ -14,7 +14,7 @@ namespace BlackjackTutorial
         {
             //Dealer starts with 1000 chips
             Dealer dealer = new Dealer("Dealer", 1000);
-            var deck = new Deck();
+            Deck deck = new Deck();
 
             int DealerStandAmount = 17;
 
@@ -260,6 +260,7 @@ namespace BlackjackTutorial
                                     else
                                     {
                                         Console.WriteLine($"{player.PlayerName} Hit or stand?");
+                                        //De computer bepaald of speler hit of stand op basis van de hand total.
                                         if (player.PlayerHitOrNot(player.PlayerHand.Total))
                                         {
                                             Console.WriteLine($"{player.PlayerName}: Hit");
@@ -287,6 +288,9 @@ namespace BlackjackTutorial
                                         else
                                         {
                                             Console.WriteLine($"{player.PlayerName}: Stand");
+                                            //Als de speler stand met een ace wordt de waarde van de ace bepaald.
+                                            //Als de hand 10 of lager is dan wordt ace 11.
+                                            //Anders wordt de ace 1.
                                             if (player.HasAceToBeDecided == true)
                                             {
                                                 player.PlayerStandsWithAce();
@@ -321,30 +325,38 @@ namespace BlackjackTutorial
                         }
                     }
                 }
+                //Nadat alle spelers aan de beurt geweest zijn. Toont de dealer zijn kaart.
                 dealer.ShowHand();
                 dealer.RevealHiddenCard();
+                //Zolang de dealer hand total lager is dan 17 moet de dealer kaarten blijven pakken.
                 while (dealer.PlayerHand.Total < DealerStandAmount)
                 {
-                    DealerInput = "";
-                    while (DealerInput != "draw card")
+                    if (dealer.HasAceToBeDecided && dealer.PlayerHand.Total > 5){
+                        dealer.PlayerStandsWithAce();
+                    } else
                     {
-                        Console.WriteLine("Dealer please enter action:");
-                        DealerInput = Console.ReadLine().ToLower();
+                        DealerInput = "";
+                        while (DealerInput != "draw card")
+                        {
+                            Console.WriteLine("Dealer please enter action:");
+                            DealerInput = Console.ReadLine().ToLower();
 
-                        if (DealerInput != "draw card")
-                        {
-                            Console.WriteLine("Incorrect action!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Correct action");
-                            Thread.Sleep(500);
-                            dealer.DrawCard(deck);
-                            Console.WriteLine();
+                            if (DealerInput != "draw card")
+                            {
+                                Console.WriteLine("Incorrect action!");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Correct action");
+                                Thread.Sleep(500);
+                                dealer.DrawCard(deck);
+                                Console.WriteLine();
+                            }
                         }
                     }
                 }
 
+                //Dealer hand checken
                 if (dealer.PlayerHand.Total == 21)
                 {
                     dealer.HasBlackjack = true;
@@ -359,6 +371,7 @@ namespace BlackjackTutorial
                     Console.WriteLine("Dealer stands still on 17");
                 }
 
+                //Bepalen of de spelers winnen, gelijk spelen of verliezen.
                 foreach (Player player in players)
                 {
                     if (player.IsBusted == true) 
@@ -413,6 +426,8 @@ namespace BlackjackTutorial
                     }                    
                 }
 
+
+                //Spelers van de tafel verwijderen als ze geen balans meer hebben.
                 foreach (Player player in players)
                 {
                     if(player.PlayerBalance == 0)
@@ -423,15 +438,24 @@ namespace BlackjackTutorial
                     }
                 }
 
-                PlayGame = Dealer.AskForAnotherGame();
-                if (PlayGame)
+                //Dealer vragen om nog een spel te spelen.
+                if (players.Count > 0)
                 {
-                    foreach (Player player in players)
+                    PlayGame = Dealer.AskForAnotherGame();
+                    if (PlayGame)
                     {
-                        player.ResetPlayer();
-                    }
+                        foreach (Player player in players)
+                        {
+                            player.ResetPlayer();
+                        }
 
-                    dealer.ResetPlayer();
+                        dealer.ResetPlayer();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No players left");
+                    PlayGame = false;
                 }
             }
         }

@@ -26,6 +26,7 @@ namespace BlackjackTutorial
         public void RevealHiddenCard()
         {
             Console.WriteLine($"Dealer reveals hidden card: {hiddenCard.Name} of {hiddenCard.Suit} (Value: {hiddenCard.Value}");
+            //Check if ace
             PlayerHand.AddCard(hiddenCard);
             Console.WriteLine();
             ShowHand();
