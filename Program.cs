@@ -14,12 +14,13 @@ namespace BlackjackTutorial
         {
             //Dealer starts with 1000 chips
             Dealer dealer = new Dealer("Dealer", 1000);
-            Deck deck = new Deck();
 
             int DealerStandAmount = 17;
 
             int TotalPlayers;
             int MaxPlayers = 4;
+
+            int MaxDecks = 4;
 
             //Player list
             List<Player> players;
@@ -27,6 +28,8 @@ namespace BlackjackTutorial
 
             //Asking dealer for amount of players
             TotalPlayers = Dealer.AskForTotalPlayers(MaxPlayers);
+
+            int totalDecks = Dealer.AskForTotalDecks(MaxDecks);
 
             Console.WriteLine($"Total players: {TotalPlayers}");
             string input = "";
@@ -111,6 +114,8 @@ namespace BlackjackTutorial
                     }
                 }
 
+                Deck deck = new Deck(totalDecks);
+
                 //Shuffle cards
                 DealerInput = "";
                 while (DealerInput != "shuffle")
@@ -127,7 +132,6 @@ namespace BlackjackTutorial
                     {
                         Console.WriteLine("Correct action!");
                         Thread.Sleep(500);
-                        deck = new Deck();
                         deck.Shuffle();
                         Console.WriteLine("Cards have been shuffled!");
                     }

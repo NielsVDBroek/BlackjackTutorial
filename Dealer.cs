@@ -26,7 +26,6 @@ namespace BlackjackTutorial
         public void RevealHiddenCard()
         {
             Console.WriteLine($"Dealer reveals hidden card: {hiddenCard.Name} of {hiddenCard.Suit} (Value: {hiddenCard.Value}");
-            //Check if ace
             PlayerHand.AddCard(hiddenCard);
             Console.WriteLine();
             ShowHand();
@@ -65,6 +64,39 @@ namespace BlackjackTutorial
 
         }
 
+        public static int AskForTotalDecks(int MaxDecksInput)
+        {
+            string TotalDecksInputString = "";
+            int TotalDecksInput = 0;
+            do
+            {
+                Console.WriteLine($"How many decks would be used? Minimum of 1, Maximum of {MaxDecksInput} decks:");
+                TotalDecksInputString = Console.ReadLine();
+
+                try
+                {
+                    TotalDecksInput = Convert.ToInt32(TotalDecksInputString);
+
+                    if (TotalDecksInput < 1 || TotalDecksInput > MaxDecksInput)
+                    {
+                        Console.WriteLine("Please enter a number between 1 and 4.");
+                    }
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("That is not a valid number.");
+                }
+                catch (OverflowException)
+                {
+                    Console.WriteLine("Please enter a number between 1 and 4.");
+                }
+
+                Console.WriteLine();
+
+            } while (TotalDecksInput < 1 || TotalDecksInput > MaxDecksInput);
+
+            return TotalDecksInput;
+        }
         public static int AskForTotalPlayers(int MaxPlayersInput)
         {
             string TotalPlayersInputString = "";

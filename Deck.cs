@@ -42,10 +42,13 @@ namespace BlackjackTutorial
         public static IEnumerable<Rank> Ranks => new[] { Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King };
     }
 
+
+    //Card class
+
     public class Card
     {
         public Suit Suit { get; private set; }
-        public Rank Rank { get; private set; }
+        public Rank Rank { get; set; }
 
         public Card(Suit suit, Rank rank)
         {
@@ -57,24 +60,30 @@ namespace BlackjackTutorial
         public int Value => Rank.Value;
     }
 
+
+    //Deck class
+
     public class Deck
     {
         private List<Card> cards;
         private Random random = new Random();
 
-        public Deck()
+        public Deck(int totalDecksInput)
         {
             cards = new List<Card>();
-            CreateDeck();
+            CreateDeck(totalDecksInput);
         }
 
-        private void CreateDeck()
+        private void CreateDeck(int totalDecks)
         {
-            foreach (Suit suit in Enum.GetValues(typeof(Suit)))
+            for (int i = 0; i < totalDecks; i++)
             {
-                foreach (Rank rank in Rank.Ranks)
+                foreach (Suit suit in Enum.GetValues(typeof(Suit)))
                 {
-                    cards.Add(new Card(suit, rank));
+                    foreach (Rank rank in Rank.Ranks)
+                    {
+                        cards.Add(new Card(suit, rank));
+                    }
                 }
             }
         }
