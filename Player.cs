@@ -60,6 +60,22 @@ namespace BlackjackTutorial
             }
         }
 
+        public Boolean PlayerSplitOrNot()
+        {
+            Random random = new Random();
+            int RandomPercentage = random.Next(0, 100);
+            int percentage = 50;
+
+            if (RandomPercentage > percentage)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public void Split()
         {
             if (!CanSplit()) return;
@@ -133,7 +149,7 @@ namespace BlackjackTutorial
 
         public void ShowHand(int handIndex)
         {
-            Console.WriteLine($"{PlayerName} hand {handIndex}: ");
+            Console.WriteLine($"{PlayerName} hand {handIndex + 1}: ");
             foreach (Card card in Hands[handIndex].HandCards)
             {
                 Console.WriteLine($"{card.Name} of {card.Suit} (Value: {card.Value})");

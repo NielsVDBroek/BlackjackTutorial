@@ -31,10 +31,16 @@ namespace BlackjackTutorial
             ShowHand(0);
         }
 
-        public void DealCards(Player player)
+        public void ShuffleArray(string[] array)
         {
-            //Code voor dealen hier.
-            
+            Random random = new Random();
+            for (int i = array.Length - 1; i > 0; i--)
+            {
+                int j = random.Next(i + 1); // Random index from 0 to i
+                string temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
         }
 
         public static Boolean AskForAnotherGame()
