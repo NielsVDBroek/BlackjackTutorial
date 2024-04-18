@@ -106,8 +106,8 @@ namespace BlackjackTutorial
                             Console.WriteLine();
                             Console.WriteLine($"{player.PlayerName} how much would you like to bet?");
                             player.SetBet();
-                            dealer.AdjustPlayerBalance(player.PlayerBet);
-                            Console.WriteLine($"{player.PlayerName} bets {player.PlayerBet}");
+                            dealer.AdjustPlayerBalance(player.Hands[0].PlayerBet);
+                            Console.WriteLine($"{player.PlayerName} bets {player.Hands[0].PlayerBet}");
                             Console.WriteLine($"{player.PlayerName} balance: {player.PlayerBalance}");
                             Console.WriteLine();
                         }
@@ -156,28 +156,52 @@ namespace BlackjackTutorial
                         var cards = deck.GetCards();
 
                         //Each player and the dealer get 2 cards
-                        for (int cardsDealt = 0; cardsDealt < 2; cardsDealt++)
+                        foreach (Player player in players)
                         {
-                            foreach (Player player in players)
+                            player.DrawCard(deck, 0);
+                            Thread.Sleep(500);
+                            Console.WriteLine();
+                        }
+
+                        dealer.DrawCard(deck, 0);
+                        Console.WriteLine();
+                        Console.WriteLine();
+
+                        foreach (Player player in players)
+                        {
+                            player.DrawCard(deck, 0);
+                            Thread.Sleep(500);
+                            Console.WriteLine();
+                            if (player.CanSplit())
                             {
-                                player.DrawCard(deck);
-                                Thread.Sleep(500);
-                                Console.WriteLine();
-                            }
-                            //Second card of the dealer needs to be hidden
-                            if (cardsDealt == 0)
-                            {
-                                dealer.DrawCard(deck);
-                                Console.WriteLine();
-                                Console.WriteLine();
-                            }
-                            else
-                            {
-                                dealer.DrawCardHidden(deck);
-                                Console.WriteLine();
-                                Console.WriteLine();
+                                String DealerSplitInput = "";
+                                String playerInput = "";
+                                while (playerInput != "yes" && playerInput != "no")
+                                {
+                                    Console.WriteLine("Do you want to split your hand? (yes/no)");
+                                    playerInput = Console.ReadLine().ToLower();
+
+                                    if (playerInput == "yes")
+                                    {
+                                        player.Split();
+                                        player.DrawCard(deck, 0);
+                                        player.DrawCard(deck, 1);
+
+                                    } else if(playerInput == "no")
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Incorrect action");
+                                    }
+                                }
                             }
                         }
+                        //Second card of the dealer needs to be hidden
+                        dealer.DrawCardHidden(deck);
+                        Console.WriteLine();
+                        Console.WriteLine();
                     }
                 }
 
@@ -186,140 +210,144 @@ namespace BlackjackTutorial
                 foreach (Player player in players)
                 {
                     Boolean playerPlaying = true;
-
-                    while (playerPlaying)
+                    for (int i = 0; i < player.Hands.Count; i++)
                     {
-                        Boolean DealerContinue = false;
-                        string DealerInputHandlePlayer = "";
+                        playerPlaying = true;
 
-                        player.ShowHand();
-                        Console.WriteLine();
-
-                        while (!DealerContinue)
+                        while (playerPlaying)
                         {
-                            //If player has a blackjack or has a blackjack due to an ace
-                            if (player.PlayerHand.Total == 21 || (player.PlayerHand.Total == 10 && player.HasAceToBeDecided))
-                            {
-                                while (DealerInputHandlePlayer != "blackjack")
-                                {
-                                    Console.WriteLine("Dealer please enter action:");
-                                    DealerInputHandlePlayer = Console.ReadLine().ToLower();
+                            Boolean DealerContinue = false;
+                            string DealerInputHandlePlayer = "";
 
-                                    if (DealerInputHandlePlayer != "blackjack")
-                                    {
-                                        Console.WriteLine("Incorrect action!");
-                                        Thread.Sleep(500);
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Correct action");
-                                        Thread.Sleep(500);
-                                        Console.WriteLine($"{player.PlayerName} has Blackjack!");
-                                        Console.WriteLine();
-                                        player.HasBlackjack = true;
-                                        playerPlaying = false;
-                                        DealerContinue = true;
-                                    }
-                                }
-                            }
-                            //If player is busted
-                            else if (player.PlayerHand.Total > 21)
-                            {
-                                while (DealerInputHandlePlayer != "busted")
-                                {
-                                    Console.WriteLine("Dealer please enter action:");
-                                    DealerInputHandlePlayer = Console.ReadLine().ToLower();
+                            player.ShowHand(i);
+                            Console.WriteLine();
 
-                                    if (DealerInputHandlePlayer != "busted")
-                                    {
-                                        Console.WriteLine("Incorrect action!");
-                                        Thread.Sleep(500);
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Correct action");
-                                        Thread.Sleep(500);
-                                        Console.WriteLine($"{player.PlayerName} is Busted!");
-                                        Console.WriteLine();
-                                        player.IsBusted = true;
-                                        playerPlaying = false;
-                                        DealerContinue = true;
-                                    }
-                                }
-                            }
-                            else
+                            while (!DealerContinue)
                             {
-                                //If not busted or blackjack the dealer asks the player hit or stand
-                                DealerInputHandlePlayer = "";
-                                while (DealerInputHandlePlayer != "ask player")
+                                //If player has a blackjack or has a blackjack due to an ace
+                                if (player.Hands[i].Total == 21 || (player.Hands[i].Total == 10 && player.Hands[i].HasAceToBeDecided))
                                 {
-                                    Console.WriteLine("Dealer please enter action:");
-                                    DealerInputHandlePlayer = Console.ReadLine().ToLower();
+                                    while (DealerInputHandlePlayer != "blackjack")
+                                    {
+                                        Console.WriteLine("Dealer please enter action:");
+                                        DealerInputHandlePlayer = Console.ReadLine().ToLower();
 
-                                    if (DealerInputHandlePlayer != "ask player")
-                                    {
-                                        Console.WriteLine("Incorrect action!");
-                                        Thread.Sleep(500);
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine($"{player.PlayerName} Hit or stand?");
-                                        //De computer bepaald of speler hit of stand op basis van de hand total.
-                                        if (player.PlayerHitOrNot(player.PlayerHand.Total))
+                                        if (DealerInputHandlePlayer != "blackjack")
                                         {
-                                            Console.WriteLine($"{player.PlayerName}: Hit");
-
-                                            DealerInput = "";
-                                            while (DealerInput != "give card")
-                                            {
-                                                Console.WriteLine("Dealer please enter action:");
-                                                DealerInput = Console.ReadLine().ToLower();
-
-                                                if (DealerInput != "give card")
-                                                {
-                                                    Console.WriteLine("Incorrect action!");
-                                                    Thread.Sleep(500);
-                                                }
-                                                else
-                                                {
-                                                    Console.WriteLine("Correct action");
-                                                    Thread.Sleep(500);
-                                                    Console.WriteLine();
-                                                    player.DrawCard(deck);
-                                                }
-                                            }
+                                            Console.WriteLine("Incorrect action!");
+                                            Thread.Sleep(500);
                                         }
                                         else
                                         {
-                                            Console.WriteLine($"{player.PlayerName}: Stand");
-                                            //Als de speler stand met een ace wordt de waarde van de ace bepaald.
-                                            //Als de hand 10 of lager is dan wordt ace 11.
-                                            //Anders wordt de ace 1.
-                                            if (player.HasAceToBeDecided == true)
+                                            Console.WriteLine("Correct action");
+                                            Thread.Sleep(500);
+                                            Console.WriteLine($"{player.PlayerName} has Blackjack!");
+                                            Console.WriteLine();
+                                            player.Hands[i].HasBlackjack = true;
+                                            playerPlaying = false;
+                                            DealerContinue = true;
+                                        }
+                                    }
+                                }
+                                //If player is busted
+                                else if (player.Hands[i].Total > 21)
+                                {
+                                    while (DealerInputHandlePlayer != "busted")
+                                    {
+                                        Console.WriteLine("Dealer please enter action:");
+                                        DealerInputHandlePlayer = Console.ReadLine().ToLower();
+
+                                        if (DealerInputHandlePlayer != "busted")
+                                        {
+                                            Console.WriteLine("Incorrect action!");
+                                            Thread.Sleep(500);
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Correct action");
+                                            Thread.Sleep(500);
+                                            Console.WriteLine($"{player.PlayerName} is Busted!");
+                                            Console.WriteLine();
+                                            player.Hands[i].IsBusted = true;
+                                            playerPlaying = false;
+                                            DealerContinue = true;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    //If not busted or blackjack the dealer asks the player hit or stand
+                                    DealerInputHandlePlayer = "";
+                                    while (DealerInputHandlePlayer != "ask player")
+                                    {
+                                        Console.WriteLine("Dealer please enter action:");
+                                        DealerInputHandlePlayer = Console.ReadLine().ToLower();
+
+                                        if (DealerInputHandlePlayer != "ask player")
+                                        {
+                                            Console.WriteLine("Incorrect action!");
+                                            Thread.Sleep(500);
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine($"{player.PlayerName} Hit or stand?");
+                                            //De computer bepaald of speler hit of stand op basis van de hand total.
+                                            if (player.PlayerHitOrNot(player.Hands[i].Total, i))
                                             {
-                                                player.PlayerStandsWithAce();
-                                            }
+                                                Console.WriteLine($"{player.PlayerName}: Hit");
 
-                                            DealerInput = "";
-
-                                            while (DealerInput != "end turn")
-                                            {
-                                                Console.WriteLine("Dealer please enter action:");
-                                                DealerInput = Console.ReadLine().ToLower();
-
-                                                if (DealerInput != "end turn")
+                                                DealerInput = "";
+                                                while (DealerInput != "give card")
                                                 {
-                                                    Console.WriteLine("Incorrect action!");
-                                                    Thread.Sleep(500);
+                                                    Console.WriteLine("Dealer please enter action:");
+                                                    DealerInput = Console.ReadLine().ToLower();
+
+                                                    if (DealerInput != "give card")
+                                                    {
+                                                        Console.WriteLine("Incorrect action!");
+                                                        Thread.Sleep(500);
+                                                    }
+                                                    else
+                                                    {
+                                                        Console.WriteLine("Correct action");
+                                                        Thread.Sleep(500);
+                                                        Console.WriteLine();
+                                                        player.DrawCard(deck, i);
+                                                    }
                                                 }
-                                                else
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine($"{player.PlayerName}: Stand");
+                                                //Als de speler stand met een ace wordt de waarde van de ace bepaald.
+                                                //Als de hand 10 of lager is dan wordt ace 11.
+                                                //Anders wordt de ace 1.
+                                                if (player.Hands[i].HasAceToBeDecided == true)
                                                 {
-                                                    Console.WriteLine("Correct action");
-                                                    Thread.Sleep(500);
-                                                    Console.WriteLine("Turn ended.");
-                                                    Console.WriteLine();
-                                                    playerPlaying = false;
-                                                    DealerContinue = true;
+                                                    player.PlayerStandsWithAce(i);
+                                                }
+
+                                                DealerInput = "";
+
+                                                while (DealerInput != "end turn")
+                                                {
+                                                    Console.WriteLine("Dealer please enter action:");
+                                                    DealerInput = Console.ReadLine().ToLower();
+
+                                                    if (DealerInput != "end turn")
+                                                    {
+                                                        Console.WriteLine("Incorrect action!");
+                                                        Thread.Sleep(500);
+                                                    }
+                                                    else
+                                                    {
+                                                        Console.WriteLine("Correct action");
+                                                        Thread.Sleep(500);
+                                                        Console.WriteLine("Turn ended.");
+                                                        Console.WriteLine();
+                                                        playerPlaying = false;
+                                                        DealerContinue = true;
+                                                    }
                                                 }
                                             }
                                         }
@@ -330,13 +358,13 @@ namespace BlackjackTutorial
                     }
                 }
                 //Nadat alle spelers aan de beurt geweest zijn. Toont de dealer zijn kaart.
-                dealer.ShowHand();
+                dealer.ShowHand(0);
                 dealer.RevealHiddenCard();
                 //Zolang de dealer hand total lager is dan 17 moet de dealer kaarten blijven pakken.
-                while (dealer.PlayerHand.Total < DealerStandAmount)
+                while (dealer.Hands[0].Total < DealerStandAmount)
                 {
-                    if (dealer.HasAceToBeDecided && dealer.PlayerHand.Total > 5){
-                        dealer.PlayerStandsWithAce();
+                    if (dealer.Hands[0].HasAceToBeDecided && dealer.Hands[0].Total > 5){
+                        dealer.PlayerStandsWithAce(0);
                     } else
                     {
                         DealerInput = "";
@@ -353,7 +381,7 @@ namespace BlackjackTutorial
                             {
                                 Console.WriteLine("Correct action");
                                 Thread.Sleep(500);
-                                dealer.DrawCard(deck);
+                                dealer.DrawCard(deck, 0);
                                 Console.WriteLine();
                             }
                         }
@@ -361,13 +389,13 @@ namespace BlackjackTutorial
                 }
 
                 //Dealer hand checken
-                if (dealer.PlayerHand.Total == 21)
+                if (dealer.Hands[0].Total == 21)
                 {
-                    dealer.HasBlackjack = true;
+                    dealer.Hands[0].HasBlackjack = true;
                     Console.WriteLine("Dealer has blackjack!");
-                } else if(dealer.PlayerHand.Total > 21)
+                } else if(dealer.Hands[0].Total > 21)
                 {
-                    dealer.IsBusted = true;
+                    dealer.Hands[0].IsBusted = true;
                     Console.WriteLine($"Dealer is busted!");
                 }
                 else
@@ -378,56 +406,61 @@ namespace BlackjackTutorial
                 //Bepalen of de spelers winnen, gelijk spelen of verliezen.
                 foreach (Player player in players)
                 {
-                    if (player.IsBusted == true) 
+                    for (int i = 0; i < player.Hands.Count; i++)
                     {
-                        Console.WriteLine($"{player.PlayerName} is busted! Dealer wins!");
-                    }
-                    else
-                    {
-                        if (dealer.HasBlackjack == true)
+                        if (player.Hands[i].IsBusted == true)
                         {
-                            if (player.HasBlackjack == true)
-                            {
-                                player.AdjustPlayerBalance(player.PlayerBet);
-                                dealer.AdjustPlayerBalance(-player.PlayerBet);
-                                Console.WriteLine("Both have blackjack");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Dealer has blackjack!");
-                            }
-                        }
-                        else if (player.HasBlackjack == true){
-                            Console.WriteLine($"{player.PlayerName} has blackjack!");
-                            player.AdjustPlayerBalance((player.PlayerBet * 2.5));
-                            dealer.AdjustPlayerBalance(-(player.PlayerBet * 2.5));
-                        }
-                        else if (dealer.IsBusted == true)
-                        {
-                            player.AdjustPlayerBalance((player.PlayerBet * 2));
-                            dealer.AdjustPlayerBalance(-(player.PlayerBet * 2));
-                            Console.WriteLine($"Dealer is busted, {player.PlayerName} wins!");
+                            Console.WriteLine($"{player.PlayerName} is busted! Dealer wins!");
                         }
                         else
                         {
-                            if(dealer.PlayerHand.Total == player.PlayerHand.Total)
+                            if (dealer.Hands[0].HasBlackjack == true)
                             {
-                                player.AdjustPlayerBalance(player.PlayerBet);
-                                dealer.AdjustPlayerBalance(-player.PlayerBet);
-                                Console.WriteLine($"{player.PlayerName} and Dealer have the same!");
+                                if (player.Hands[i].HasBlackjack == true)
+                                {
+                                    player.AdjustPlayerBalance(player.Hands[i].PlayerBet);
+                                    dealer.AdjustPlayerBalance(-player.Hands[i].PlayerBet);
+                                    Console.WriteLine("Both have blackjack");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Dealer has blackjack!");
+                                }
                             }
-                            else if (dealer.PlayerHand.Total < player.PlayerHand.Total){
-                                player.AdjustPlayerBalance((player.PlayerBet * 2));
-                                dealer.AdjustPlayerBalance(-(player.PlayerBet * 2));
-                                Console.WriteLine($"{player.PlayerName} has higher then dealer!");
+                            else if (player.Hands[i].HasBlackjack == true)
+                            {
+                                Console.WriteLine($"{player.PlayerName} has blackjack!");
+                                player.AdjustPlayerBalance((player.Hands[i].PlayerBet * 2.5));
+                                dealer.AdjustPlayerBalance(-(player.Hands[i].PlayerBet * 2.5));
+                            }
+                            else if (dealer.Hands[0].IsBusted == true)
+                            {
+                                player.AdjustPlayerBalance((player.Hands[i].PlayerBet * 2));
+                                dealer.AdjustPlayerBalance(-(player.Hands[i].PlayerBet * 2));
+                                Console.WriteLine($"Dealer is busted, {player.PlayerName} wins!");
                             }
                             else
                             {
-                                Console.WriteLine($"Dealer has higher then {player.PlayerName}! Dealer wins!");
-                            }
+                                if (dealer.Hands[i].Total == player.Hands[i].Total)
+                                {
+                                    player.AdjustPlayerBalance(player.Hands[i].PlayerBet);
+                                    dealer.AdjustPlayerBalance(-player.Hands[i].PlayerBet);
+                                    Console.WriteLine($"{player.PlayerName} and Dealer have the same!");
+                                }
+                                else if (dealer.Hands[i].Total < player.Hands[i].Total)
+                                {
+                                    player.AdjustPlayerBalance((player.Hands[i].PlayerBet * 2));
+                                    dealer.AdjustPlayerBalance(-(player.Hands[i].PlayerBet * 2));
+                                    Console.WriteLine($"{player.PlayerName} has higher then dealer!");
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"Dealer has higher then {player.PlayerName}! Dealer wins!");
+                                }
 
+                            }
                         }
-                    }                    
+                    }                   
                 }
 
 

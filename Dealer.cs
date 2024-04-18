@@ -20,15 +20,15 @@ namespace BlackjackTutorial
         {
             Console.WriteLine("Dealer drew a card.");
             hiddenCard = deck.DrawCardHidden();
-            Console.WriteLine($"Dealers card is hidden. Hand total: {PlayerHand.Total}");
+            Console.WriteLine($"Dealers card is hidden. Hand total: {Hands[0].Total}");
         }
 
         public void RevealHiddenCard()
         {
             Console.WriteLine($"Dealer reveals hidden card: {hiddenCard.Name} of {hiddenCard.Suit} (Value: {hiddenCard.Value}");
-            PlayerHand.AddCard(hiddenCard);
+            Hands[0].AddCard(hiddenCard);
             Console.WriteLine();
-            ShowHand();
+            ShowHand(0);
         }
 
         public void DealCards(Player player)
