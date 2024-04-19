@@ -8,6 +8,7 @@ using System.Xml.Linq;
 
 namespace BlackjackTutorial
 {
+    //Hand class
     public class Hand
     {
         public List<Card> HandCards;
@@ -18,7 +19,7 @@ namespace BlackjackTutorial
         public Boolean IsBusted { get; set; }
         public Boolean HasAceToBeDecided { get; set; }
 
-        public Boolean HasDubbledDown { get; set; }
+        public Boolean HasDoubledDown { get; set; }
 
         public Card PlayerAce { get; set; }
 
@@ -29,7 +30,7 @@ namespace BlackjackTutorial
             IsBusted = false;
             HasAceToBeDecided = false;
             PlayerAce = null;
-            HasDubbledDown = false;
+            HasDoubledDown = false;
         }
 
         public void AddCard(Card newCard)
@@ -39,6 +40,7 @@ namespace BlackjackTutorial
         }
     }
 
+    //Player class
     public class Player
     {
         public string PlayerName { get; private set; }
@@ -52,7 +54,9 @@ namespace BlackjackTutorial
             Hands = new List<Hand> { new Hand() };
             PlayerBalance = StartBalance;
         }
-        public bool CanSplit()
+
+        //Retrieves boolean if player can split their hand
+        public Boolean CanSplit()
         {   if (Hands[0].PlayerBet <= PlayerBalance)
             {
                 return Hands[0].HandCards.Count == 2 && Hands[0].HandCards[0].Rank == Hands[0].HandCards[1].Rank;
@@ -63,6 +67,7 @@ namespace BlackjackTutorial
             }
         }
 
+        //Determins if a player will split or not
         public Boolean PlayerSplitOrNot()
         {
             Random random = new Random();
@@ -79,6 +84,7 @@ namespace BlackjackTutorial
             }
         }
 
+        //Allows the hand to be split
         public void Split()
         {
             if (!CanSplit()) return;
@@ -96,6 +102,7 @@ namespace BlackjackTutorial
             HasSplit = true;
         }
 
+        //Player bet set
         public int SetBet()
         {
             if (PlayerBalance <= 10)
@@ -110,22 +117,25 @@ namespace BlackjackTutorial
             return Hands[0].PlayerBet;
         }
 
+        //Adjusts the players balance based on the bet
         public void AdjustPlayerBalance(int CurrentPlayerBet)
         {
             PlayerBalance += CurrentPlayerBet;
         }
 
+        //Resets the player
         public void ResetPlayer()
         {
             Hands = new List<Hand> { new Hand() };
             HasSplit = false;
         }
 
-
+        //Draws a card from deck and adds it to their hand
         public void DrawCard(Deck deck, int handIndex)
         {
             Console.WriteLine($"{PlayerName} drew a card.");
             Card drawnCard = deck.DrawCard();
+            //Checks if the card is an ace
             if (drawnCard.Rank.Name == "Ace" && Hands[handIndex].Total <= 10 && Hands[handIndex].HasAceToBeDecided == false)
             {
                 Hands[handIndex].HasAceToBeDecided = true;
@@ -146,13 +156,14 @@ namespace BlackjackTutorial
             ShowHand(handIndex);
         }
 
+        //Shows the hand of the player
         public void ShowHand(int handIndex)
         {
             Console.WriteLine($"{PlayerName} hand {handIndex + 1}: ");
             foreach (Card card in Hands[handIndex].HandCards)
             {
                 Console.WriteLine($"{card.Name} of {card.Suit} (Value: {card.Value})");
-            }
+            }//Checks if the hand has an ace that hasn't been decided
             if (Hands[handIndex].HasAceToBeDecided == true)
             {
                 Console.WriteLine($"{Hands[handIndex].PlayerAce.Name} of {Hands[handIndex].PlayerAce.Suit} (Value: {Hands[handIndex].PlayerAce.Value})");
@@ -164,11 +175,13 @@ namespace BlackjackTutorial
             }
         }
 
+        //Determins if the player will hit or not based on their hand value
         public Boolean PlayerHitOrNot(int playerTotal, int handIndex)
         {
             Random random = new Random();
             int RandomPercentage = random.Next(0, 100);
             int percentage;
+            //If the players ace can be 11, that will be taken into acountability
             if (Hands[handIndex].HasAceToBeDecided)
             {
                 percentage = (((playerTotal + 11) - 11) * 11);
@@ -191,7 +204,8 @@ namespace BlackjackTutorial
             }
         }
 
-        public Boolean DubbleDown(int playerTotal, int handIndex)
+        //Determins if a player will double down, and doubles their bet
+        public Boolean DoubleDown(int playerTotal, int handIndex)
         {
             Random random = new Random();
             int RandomPercentage = random.Next(0, 100);
@@ -218,7 +232,7 @@ namespace BlackjackTutorial
 
             if (RandomPercentage > percentage)
             {
-                Hands[handIndex].HasDubbledDown = true;
+                Hands[handIndex].HasDoubledDown = true;
                 PlayerBalance -= Hands[handIndex].PlayerBet;
                 Hands[handIndex].PlayerBet = (Hands[handIndex].PlayerBet * 2);
                 return true;
@@ -229,6 +243,7 @@ namespace BlackjackTutorial
             }
         }
 
+        //Determins what happens with the ace when player stands
         public void PlayerStandsWithAce(int handIndex)
         {
             if (Hands[handIndex].HasAceToBeDecided)

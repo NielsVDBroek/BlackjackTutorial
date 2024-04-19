@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlackjackTutorial
 {
+    //Dealer inherits player
     public class Dealer : Player
     {
         public Dealer(string name, int startBalance) : base(name, startBalance)
@@ -13,9 +14,11 @@ namespace BlackjackTutorial
             string dealerName = name;
             int dealerBalance = startBalance;
         }
-
+        
+        //The dealers hidden card
         Card hiddenCard;
 
+        //Draws the dealers hidden card
         public void DrawCardHidden(Deck deck)
         {
             Console.WriteLine("Dealer drew a card.");
@@ -23,6 +26,7 @@ namespace BlackjackTutorial
             Console.WriteLine($"Dealers card is hidden. Hand total: {Hands[0].Total}");
         }
 
+        //Reveals the dealers hidden card
         public void RevealHiddenCard()
         {
             Console.WriteLine($"Dealer reveals hidden card: {hiddenCard.Name} of {hiddenCard.Suit} (Value: {hiddenCard.Value}");
@@ -31,6 +35,8 @@ namespace BlackjackTutorial
             ShowHand(0);
         }
 
+
+        //Shuffles the DealerActions array
         public void ShuffleArray(string[] array)
         {
             Random random = new Random();
@@ -43,6 +49,7 @@ namespace BlackjackTutorial
             }
         }
 
+        //Asks the dealer for another game
         public static Boolean AskForAnotherGame()
         {
             string rematchInput = "";
@@ -69,7 +76,8 @@ namespace BlackjackTutorial
             return anotherMatch;
 
         }
-
+        
+        //Asks the dealer for the amount of decks to be used
         public static int AskForTotalDecks(int MaxDecksInput)
         {
             string TotalDecksInputString = "";
@@ -103,6 +111,8 @@ namespace BlackjackTutorial
 
             return TotalDecksInput;
         }
+
+        //Asks the dealer how many players are playing  
         public static int AskForTotalPlayers(int MaxPlayersInput)
         {
             string TotalPlayersInputString = "";

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlackjackTutorial
 {
+    //Card Suits
     public enum Suit
     {
         Hearts,
@@ -14,6 +15,7 @@ namespace BlackjackTutorial
         Spades
     }
 
+    //Card Rank
     public class Rank
     {
         public string Name { get; }
@@ -44,7 +46,6 @@ namespace BlackjackTutorial
 
 
     //Card class
-
     public class Card
     {
         public Suit Suit { get; private set; }
@@ -62,7 +63,6 @@ namespace BlackjackTutorial
 
 
     //Deck class
-
     public class Deck
     {
         private List<Card> cards;
@@ -74,6 +74,7 @@ namespace BlackjackTutorial
             CreateDeck(totalDecksInput);
         }
 
+        //Initialize a deck when a deck gets created
         private void CreateDeck(int totalDecks)
         {
             for (int i = 0; i < totalDecks; i++)
@@ -88,6 +89,7 @@ namespace BlackjackTutorial
             }
         }
 
+        //Shuffle the deck
         public void Shuffle()
         {
             int i = cards.Count;
@@ -101,6 +103,7 @@ namespace BlackjackTutorial
             }
         }
 
+        //Draw a card from the deck
         public Card DrawCard()
         {
             Card CurrentCard = cards[0];
@@ -111,6 +114,7 @@ namespace BlackjackTutorial
             return CurrentCard;
         }
 
+        //Dealer can draw a hidden card
         public Card DrawCardHidden()
         {
             Card CurrentCard = cards[0];
