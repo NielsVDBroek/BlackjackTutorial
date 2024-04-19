@@ -17,7 +17,7 @@ namespace BlackjackTutorial
 
             int DealerStandAmount = 17;
 
-            string[] dealerActions = new string[] { "Ask bet", "Shuffle", "Deal cards", "Split", "Blackjack", "Busted", "Ask player", "Give card", "End turn", "Draw Card" };
+            string[] dealerActions = new string[] { "Ask bet", "Shuffle", "Deal cards", "Split", "Blackjack", "Busted", "Ask player", "Dubble", "Give card", "End turn", "Draw Card" };
             string[] dealerActionsShuffled = new string[dealerActions.Length];
 
             Array.Copy(dealerActions, dealerActionsShuffled, dealerActions.Length);
@@ -90,8 +90,9 @@ namespace BlackjackTutorial
             Boolean PlayGame = true;
             while (PlayGame)
             {
+                dealer.ShuffleArray(dealerActionsShuffled);
                 string DealerInput = "";
-
+                int playersTotalBets = 0;
                 //Asking players how much they will bet
                 foreach (Player player in players)
                 {
@@ -117,7 +118,7 @@ namespace BlackjackTutorial
                             Thread.Sleep(500);
                             Console.WriteLine();
                             Console.WriteLine($"{player.PlayerName} how much would you like to bet?");
-                            player.SetBet();
+                            playersTotalBets = player.SetBet();
                             dealer.AdjustPlayerBalance(player.Hands[0].PlayerBet);
                             Console.WriteLine($"{player.PlayerName} bets {player.Hands[0].PlayerBet}");
                             Console.WriteLine($"{player.PlayerName} balance: {player.PlayerBalance}");
@@ -125,6 +126,22 @@ namespace BlackjackTutorial
                         }
                     }
                 }
+
+                if (dealer.PlayerBalance < playersTotalBets)
+                {
+                    Console.WriteLine("Dealer does not have enough balance to play");
+                    Console.WriteLine("Players will get their bets back");
+                    foreach(Player player in players)
+                    {
+                        player.AdjustPlayerBalance(player.Hands[0].PlayerBet);
+                    }
+                    Console.WriteLine("Casino closed for today");
+                    PlayGame = false;
+                    break;
+                }
+
+                Console.WriteLine("All players have bet");
+                Console.WriteLine();
 
                 Deck deck = new Deck(totalDecks);
 
@@ -196,38 +213,44 @@ namespace BlackjackTutorial
                             Console.WriteLine();
                             if (player.CanSplit())
                             {
-                                Console.WriteLine($"{player.PlayerName} do you want to split your hand? (yes/no)");
-                                if (player.PlayerSplitOrNot())
+                                if((playersTotalBets + player.Hands[0].PlayerBet) > dealer.PlayerBalance)
                                 {
-                                    Console.WriteLine($"{player.PlayerName}: Split");
-                                    Console.WriteLine("Dealer please enter one of the following actions:");
-                                    foreach (string action in dealerActionsShuffled)
-                                    {
-                                        Console.Write($"{action}, ");
-                                    }
-                                    Console.WriteLine();
-                                    String DealerSplitInput = "";
-                                    while (DealerSplitInput != "split")
-                                    {
-                                        DealerSplitInput = Console.ReadLine().ToLower();
-                                        if (DealerSplitInput == "split")
-                                        {
-                                            player.Split();
-                                            player.DrawCard(deck, 0);
-                                            player.DrawCard(deck, 1);
-
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Incorrect action");
-                                        }
-                                    }
+                                    Console.WriteLine("Dealer does not have enough balance to allow a split.");
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"{player.PlayerName}: No Split");
-                                }
+                                    Console.WriteLine($"{player.PlayerName} do you want to split your hand? (yes/no)");
+                                    if (player.PlayerSplitOrNot())
+                                    {
+                                        Console.WriteLine($"{player.PlayerName}: Split");
+                                        Console.WriteLine("Dealer please enter one of the following actions:");
+                                        foreach (string action in dealerActionsShuffled)
+                                        {
+                                            Console.Write($"{action}, ");
+                                        }
+                                        Console.WriteLine();
+                                        String DealerSplitInput = "";
+                                        while (DealerSplitInput != "split")
+                                        {
+                                            DealerSplitInput = Console.ReadLine().ToLower();
+                                            if (DealerSplitInput == "split")
+                                            {
+                                                player.Split();
+                                                player.DrawCard(deck, 0);
+                                                player.DrawCard(deck, 1);
 
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("Incorrect action");
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"{player.PlayerName}: No Split");
+                                    }
+                                }
                             }
                         }
                         //Second card of the dealer needs to be hidden
@@ -320,7 +343,7 @@ namespace BlackjackTutorial
                                 {
                                     //If not busted or blackjack the dealer asks the player hit or stand
                                     DealerInputHandlePlayer = "";
-                                    while (DealerInputHandlePlayer != "ask player")
+                                    while (DealerInputHandlePlayer != "ask player" && player.Hands[i].HasDubbledDown == false)
                                     {
                                         Console.WriteLine("Dealer please enter one of the following actions:");
                                         foreach (string action in dealerActionsShuffled)
@@ -341,30 +364,64 @@ namespace BlackjackTutorial
                                             //De computer bepaald of speler hit of stand op basis van de hand total.
                                             if (player.PlayerHitOrNot(player.Hands[i].Total, i))
                                             {
-                                                Console.WriteLine($"{player.PlayerName}: Hit");
-
-                                                DealerInput = "";
-                                                while (DealerInput != "give card")
+                                                if (player.DubbleDown(player.Hands[i].Total, i))
                                                 {
-                                                    Console.WriteLine("Dealer please enter one of the following actions:");
-                                                    foreach (string action in dealerActionsShuffled)
-                                                    {
-                                                        Console.Write($"{action}, ");
-                                                    }
-                                                    Console.WriteLine();
-                                                    DealerInput = Console.ReadLine().ToLower();
+                                                    Console.WriteLine($"{player.PlayerName}: Dubble");
 
-                                                    if (DealerInput != "give card")
+                                                    DealerInput = "";
+                                                    while (DealerInput != "dubble")
                                                     {
-                                                        Console.WriteLine("Incorrect action!");
-                                                        Thread.Sleep(500);
-                                                    }
-                                                    else
-                                                    {
-                                                        Console.WriteLine("Correct action");
-                                                        Thread.Sleep(500);
+                                                        Console.WriteLine("Dealer please enter one of the following actions:");
+                                                        foreach (string action in dealerActionsShuffled)
+                                                        {
+                                                            Console.Write($"{action}, ");
+                                                        }
                                                         Console.WriteLine();
-                                                        player.DrawCard(deck, i);
+                                                        DealerInput = Console.ReadLine().ToLower();
+
+                                                        if (DealerInput != "dubble")
+                                                        {
+                                                            Console.WriteLine("Incorrect action!");
+                                                            Thread.Sleep(500);
+                                                        }
+                                                        else
+                                                        {
+                                                            Console.WriteLine("Correct action");
+                                                            Thread.Sleep(500);
+                                                            Console.WriteLine();
+                                                            player.DrawCard(deck, i);
+                                                            playerPlaying = false;
+                                                            DealerContinue = true;
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Console.WriteLine($"{player.PlayerName}: Hit");
+
+                                                    DealerInput = "";
+                                                    while (DealerInput != "give card")
+                                                    {
+                                                        Console.WriteLine("Dealer please enter one of the following actions:");
+                                                        foreach (string action in dealerActionsShuffled)
+                                                        {
+                                                            Console.Write($"{action}, ");
+                                                        }
+                                                        Console.WriteLine();
+                                                        DealerInput = Console.ReadLine().ToLower();
+
+                                                        if (DealerInput != "give card")
+                                                        {
+                                                            Console.WriteLine("Incorrect action!");
+                                                            Thread.Sleep(500);
+                                                        }
+                                                        else
+                                                        {
+                                                            Console.WriteLine("Correct action");
+                                                            Thread.Sleep(500);
+                                                            Console.WriteLine();
+                                                            player.DrawCard(deck, i);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -492,8 +549,8 @@ namespace BlackjackTutorial
                             else if (player.Hands[i].HasBlackjack == true)
                             {
                                 Console.WriteLine($"{player.PlayerName} hand {i + 1} has blackjack!");
-                                player.AdjustPlayerBalance((player.Hands[i].PlayerBet * 2.5));
-                                dealer.AdjustPlayerBalance(-(player.Hands[i].PlayerBet * 2.5));
+                                player.AdjustPlayerBalance((int)Math.Ceiling((player.Hands[i].PlayerBet * 2.5)));
+                                dealer.AdjustPlayerBalance(-(int)Math.Ceiling((player.Hands[i].PlayerBet * 2.5)));
                             }
                             else if (dealer.Hands[0].IsBusted == true)
                             {
@@ -503,13 +560,13 @@ namespace BlackjackTutorial
                             }
                             else
                             {
-                                if (dealer.Hands[i].Total == player.Hands[i].Total)
+                                if (dealer.Hands[0].Total == player.Hands[i].Total)
                                 {
                                     player.AdjustPlayerBalance(player.Hands[i].PlayerBet);
                                     dealer.AdjustPlayerBalance(-player.Hands[i].PlayerBet);
                                     Console.WriteLine($"{player.PlayerName} hand {i + 1} and Dealer have the same!");
                                 }
-                                else if (dealer.Hands[i].Total < player.Hands[i].Total)
+                                else if (dealer.Hands[0].Total < player.Hands[i].Total)
                                 {
                                     player.AdjustPlayerBalance((player.Hands[i].PlayerBet * 2));
                                     dealer.AdjustPlayerBalance(-(player.Hands[i].PlayerBet * 2));

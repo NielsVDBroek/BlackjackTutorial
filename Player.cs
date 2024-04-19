@@ -13,10 +13,12 @@ namespace BlackjackTutorial
         public List<Card> HandCards;
         public int Total { get; set; }
 
-        public double PlayerBet { get; set; }
+        public int PlayerBet { get; set; }
         public Boolean HasBlackjack { get; set; }
         public Boolean IsBusted { get; set; }
         public Boolean HasAceToBeDecided { get; set; }
+
+        public Boolean HasDubbledDown { get; set; }
 
         public Card PlayerAce { get; set; }
 
@@ -27,6 +29,7 @@ namespace BlackjackTutorial
             IsBusted = false;
             HasAceToBeDecided = false;
             PlayerAce = null;
+            HasDubbledDown = false;
         }
 
         public void AddCard(Card newCard)
@@ -41,7 +44,7 @@ namespace BlackjackTutorial
         public string PlayerName { get; private set; }
         public List<Hand> Hands { get; private set; }
         public Boolean HasSplit {  get; private set; }
-        public double PlayerBalance { get; private set; }
+        public int PlayerBalance { get; private set; }
 
         public Player(string name, int StartBalance)
         {
@@ -64,7 +67,7 @@ namespace BlackjackTutorial
         {
             Random random = new Random();
             int RandomPercentage = random.Next(0, 100);
-            int percentage = 50;
+            int percentage = 20;
 
             if (RandomPercentage > percentage)
             {
@@ -93,7 +96,7 @@ namespace BlackjackTutorial
             HasSplit = true;
         }
 
-        public void SetBet()
+        public int SetBet()
         {
             if (PlayerBalance <= 10)
             {
@@ -101,12 +104,13 @@ namespace BlackjackTutorial
             }
             else
             {
-                Hands[0].PlayerBet = (PlayerBalance * 0.2);
+                Hands[0].PlayerBet = (int)Math.Ceiling(PlayerBalance * 0.2);
             }
             PlayerBalance -= Hands[0].PlayerBet;
+            return Hands[0].PlayerBet;
         }
 
-        public void AdjustPlayerBalance(double CurrentPlayerBet)
+        public void AdjustPlayerBalance(int CurrentPlayerBet)
         {
             PlayerBalance += CurrentPlayerBet;
         }
@@ -114,12 +118,7 @@ namespace BlackjackTutorial
         public void ResetPlayer()
         {
             Hands = new List<Hand> { new Hand() };
-            Hands[0].PlayerBet = 0;
-            Hands[0].HasBlackjack = false;
-            Hands[0].IsBusted = false;
-            Hands[0].HasAceToBeDecided = false;
             HasSplit = false;
-            Hands[0].PlayerAce = null;
         }
 
 
@@ -184,6 +183,44 @@ namespace BlackjackTutorial
 
             if (RandomPercentage > percentage)
             {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Boolean DubbleDown(int playerTotal, int handIndex)
+        {
+            Random random = new Random();
+            int RandomPercentage = random.Next(0, 100);
+            int percentage;
+            if (Hands[handIndex].HasAceToBeDecided)
+            {
+                percentage = (((playerTotal + 11) - 11) * 11);
+            }
+            else
+            {
+                if (playerTotal > 6)
+                {
+                    percentage = ((playerTotal - 11) * 11);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            if (percentage < 0)
+            {
+                percentage = 0;
+            }
+
+            if (RandomPercentage > percentage)
+            {
+                Hands[handIndex].HasDubbledDown = true;
+                PlayerBalance -= Hands[handIndex].PlayerBet;
+                Hands[handIndex].PlayerBet = (Hands[handIndex].PlayerBet * 2);
                 return true;
             }
             else
