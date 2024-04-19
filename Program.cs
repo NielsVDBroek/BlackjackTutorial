@@ -25,7 +25,6 @@ namespace BlackjackTutorial
 
             int TotalPlayers;
             int MaxPlayers = 4;
-
             int MaxDecks = 4;
 
             int DealerActionsCorrect = 0;
